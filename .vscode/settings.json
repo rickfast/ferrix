@@ -1,0 +1,5 @@
+{
+    "rust-analyzer.linkedProjects": [
+        "./ferrix-python-hooks/Cargo.toml"
+    ]
+}

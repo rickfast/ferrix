@@ -1,0 +1,10 @@
+[package]
+name = "ferrix-model-api"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.75"
+ferrix-protos = { path = "../ferrix-protos" }
+pyo3 = "0.19.1"
+thiserror = "1.0.43"

@@ -1,0 +1,11 @@
+[package]
+name = "ferrix-model-pytorch"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.75"
+atomic-option = "0.1.2"
+ferrix-model-api = { path = "../ferrix-model-api" }
+ferrix-protos = { path = "../ferrix-protos" }
+tch = { version = "0.14.0", features = ["download-libtorch"]}

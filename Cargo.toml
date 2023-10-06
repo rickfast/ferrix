@@ -1,0 +1,16 @@
+[package]
+name = "ferrix"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+members = [
+    "ferrix-model-api",
+    "ferrix-protos",
+    "ferrix-server",
+    "ferrix-model-candle",
+    "ferrix-model-onnx",
+    "ferrix-model-pytorch",
+    "ferrix-python-hooks",
+    "ferrix-python"
+]
