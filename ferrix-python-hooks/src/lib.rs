@@ -14,7 +14,6 @@ const CODE: &str = "import ferrix
 
 @ferrix.preprocessor
 def test(infer_input: ferrix.InferRequest) -> ferrix.InferRequest:
-    arr = infer_input.inputs[0].as_numpy()
     return infer_input
 
 @ferrix.postprocessor
