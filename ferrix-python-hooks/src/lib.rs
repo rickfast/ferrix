@@ -92,7 +92,6 @@ mod tests {
     use super::*;
 
     #[test]
-    #[ignore = "will fix"]
     fn test() {
         eval();
 
@@ -119,8 +118,9 @@ mod tests {
                     bytes_contents: vec![],
                 },
             }],
+            // inputs: vec![],
             outputs: vec![],
-            raw_input_contents: vec![],
+            raw_input_contents: vec![vec![1_u8]],
         };
 
         let response = preprocess(infer_request);

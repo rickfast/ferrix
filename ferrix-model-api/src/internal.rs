@@ -1,9 +1,11 @@
+use core::panic;
 use std::collections::HashMap;
 
 use ferrix_protos::infer_parameter::*;
 use ferrix_protos::model_infer_request::*;
 use ferrix_protos::model_infer_response::InferOutputTensor;
 use ferrix_protos::*;
+use pyo3::PyResult;
 use pyo3::types::IntoPyDict;
 use pyo3::types::PyDict;
 use pyo3::types::PyList;
@@ -11,6 +13,7 @@ use pyo3::FromPyObject;
 use pyo3::IntoPy;
 use pyo3::Py;
 use pyo3::ToPyObject;
+use pyo3::PyAny;
 
 use crate::python::PyInferInput;
 use crate::python::PyInferOutput;
@@ -46,7 +49,8 @@ pub struct InferRequest {
 impl ToPyObject for InferRequest {
     fn to_object(&self, py: pyo3::Python<'_>) -> pyo3::PyObject {
         let parameters: Py<PyDict> = self.parameters.clone().into_py_dict(py).into_py(py);
-        let inputs = PyList::new(py, self.inputs.clone()).into_py(py);
+        let x: Vec<Py<PyAny>> = self.inputs.iter().map(|input| input.to_object(py)).collect();
+        let inputs = PyList::new(py, x).into_py(py);
         let outputs = PyList::empty(py).into_py(py);
         let raw = PyList::empty(py).into_py(py);
         let request = PyInferRequest::new(
@@ -182,7 +186,7 @@ impl ToPyObject for Parameter {
     }
 }
 
-#[derive(Clone, FromPyObject)]
+#[derive(Clone)]
 pub struct InputTensor {
     pub name: String,
     pub datatype: String,
@@ -215,6 +219,32 @@ impl InputTensor {
                 request.contents.as_ref().unwrap(),
             ),
         }
+    }
+}
+
+impl FromPyObject<'_> for InputTensor {
+    fn extract(ob: &'_ PyAny) -> pyo3::PyResult<Self> {
+        let mut tensor_data = TensorData::default();
+        let name: String = ob.getattr("name")?.extract()?;
+        let datatype: String = ob.getattr("datatype")?.extract()?;
+        let shape: Vec<i64> = ob.getattr("shape")?.extract()?;
+        let parameters: HashMap<String, Parameter> = HashMap::new();
+        let _: Result<(), anyhow::Error> = match datatype.as_str() {
+            "FP32" => {
+                tensor_data.fp32_contents = ob.getattr("data")?.extract()?;
+                Ok(())
+            },
+            _ => todo!()
+        };
+        let tensor = InputTensor {
+            name,
+            datatype,
+            shape,
+            parameters,
+            data: tensor_data
+        };
+
+        return PyResult::Ok(tensor);
     }
 }
 
