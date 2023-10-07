@@ -5,15 +5,15 @@ use ferrix_protos::infer_parameter::*;
 use ferrix_protos::model_infer_request::*;
 use ferrix_protos::model_infer_response::InferOutputTensor;
 use ferrix_protos::*;
-use pyo3::PyResult;
 use pyo3::types::IntoPyDict;
 use pyo3::types::PyDict;
 use pyo3::types::PyList;
 use pyo3::FromPyObject;
 use pyo3::IntoPy;
 use pyo3::Py;
-use pyo3::ToPyObject;
 use pyo3::PyAny;
+use pyo3::PyResult;
+use pyo3::ToPyObject;
 
 use crate::python::PyInferInput;
 use crate::python::PyInferOutput;
@@ -49,7 +49,11 @@ pub struct InferRequest {
 impl ToPyObject for InferRequest {
     fn to_object(&self, py: pyo3::Python<'_>) -> pyo3::PyObject {
         let parameters: Py<PyDict> = self.parameters.clone().into_py_dict(py).into_py(py);
-        let x: Vec<Py<PyAny>> = self.inputs.iter().map(|input| input.to_object(py)).collect();
+        let x: Vec<Py<PyAny>> = self
+            .inputs
+            .iter()
+            .map(|input| input.to_object(py))
+            .collect();
         let inputs = PyList::new(py, x).into_py(py);
         let outputs = PyList::empty(py).into_py(py);
         let raw = PyList::empty(py).into_py(py);
@@ -233,15 +237,15 @@ impl FromPyObject<'_> for InputTensor {
             "FP32" => {
                 tensor_data.fp32_contents = ob.getattr("data")?.extract()?;
                 Ok(())
-            },
-            _ => todo!()
+            }
+            _ => todo!(),
         };
         let tensor = InputTensor {
             name,
             datatype,
             shape,
             parameters,
-            data: tensor_data
+            data: tensor_data,
         };
 
         return PyResult::Ok(tensor);

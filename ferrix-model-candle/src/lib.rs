@@ -88,6 +88,4 @@ impl Model for CandleModel {
 }
 
 #[cfg(test)]
-mod tests {
-    
-}
+mod tests {}

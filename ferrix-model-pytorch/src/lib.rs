@@ -141,7 +141,9 @@ mod tests {
     fn test_basic_pytorch_inference() {
         let resource_dir = format!("{}/resource", env!("CARGO_MANIFEST_DIR"));
         let saved_model_filename = format!("{}/model.pt", resource_dir);
-        let mut model = PyTorchModel::new(PyTorchModelConfig { model: saved_model_filename });
+        let mut model = PyTorchModel::new(PyTorchModelConfig {
+            model: saved_model_filename,
+        });
         let load_result = model.load();
 
         match load_result {
@@ -153,7 +155,7 @@ mod tests {
         let image_tensor = imagenet::load_image_and_resize224(cat_image).unwrap();
         let numel = image_tensor.numel();
         let data = &mut vec![0.0_f32; numel][..];
-        
+
         image_tensor.copy_data(data, numel);
 
         let mut tensor_data = TensorData::default();
