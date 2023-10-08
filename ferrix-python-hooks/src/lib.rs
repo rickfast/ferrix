@@ -87,8 +87,6 @@ pub fn postprocess(input: InferResponse) -> InferResponse {
 mod tests {
     use std::collections::HashMap;
 
-    use ferrix_protos::model_infer_request::InferInputTensor;
-
     use super::*;
 
     #[test]
