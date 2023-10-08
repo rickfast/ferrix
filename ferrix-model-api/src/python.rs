@@ -5,19 +5,19 @@ use pyo3::*;
 #[derive(Clone)]
 pub struct PyInferRequest {
     #[pyo3(get, set)]
-    model_name: String,
+    pub model_name: String,
     #[pyo3(get, set)]
-    model_version: String,
+    pub model_version: String,
     #[pyo3(get, set)]
-    id: String,
+    pub id: String,
     #[pyo3(get, set)]
-    parameters: Py<PyDict>,
+    pub parameters: Py<PyDict>,
     #[pyo3(get, set)]
-    inputs: Py<PyList>,
+    pub inputs: Py<PyList>,
     #[pyo3(get, set)]
-    outputs: Py<PyList>,
+    pub outputs: Py<PyList>,
     #[pyo3(get, set)]
-    raw_input_contents: Py<PyList>,
+    pub raw_input_contents: Py<PyList>,
 }
 
 #[pymethods]
@@ -48,13 +48,13 @@ impl PyInferRequest {
 #[derive(Clone)]
 pub struct PyParameter {
     #[pyo3(get, set)]
-    str_param: Option<String>,
+    pub str_param: Option<String>,
     #[pyo3(get, set)]
-    int_param: Option<i64>,
+    pub int_param: Option<i64>,
     #[pyo3(get, set)]
-    float_param: Option<f64>,
+    pub float_param: Option<f64>,
     #[pyo3(get, set)]
-    bool_param: Option<bool>,
+    pub bool_param: Option<bool>,
 }
 
 #[pymethods]
@@ -110,15 +110,15 @@ impl PyInferResponse {
 #[derive(Clone)]
 pub struct PyInferInput {
     #[pyo3(get, set)]
-    name: String,
+    pub name: String,
     #[pyo3(get, set)]
-    datatype: String,
+    pub datatype: String,
     #[pyo3(get, set)]
-    shape: Vec<i64>,
+    pub shape: Vec<i64>,
     #[pyo3(get, set)]
-    parameters: Py<PyDict>,
+    pub parameters: Py<PyDict>,
     #[pyo3(get, set)]
-    data: Py<PyList>,
+    pub data: Py<PyList>,
 }
 
 #[pymethods]
@@ -165,15 +165,15 @@ impl PyInferInput {
 #[derive(Clone)]
 pub struct PyInferOutput {
     #[pyo3(get, set)]
-    name: String,
+    pub name: String,
     #[pyo3(get, set)]
-    datatype: String,
+    pub datatype: String,
     #[pyo3(get, set)]
-    shape: Vec<i64>,
+    pub shape: Vec<i64>,
     #[pyo3(get, set)]
-    parameters: Py<PyDict>,
+    pub parameters: Py<PyDict>,
     #[pyo3(get, set)]
-    data: Py<PyList>,
+    pub data: Py<PyList>,
 }
 
 #[pymethods]

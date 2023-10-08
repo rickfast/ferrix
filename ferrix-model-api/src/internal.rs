@@ -35,7 +35,7 @@ macro_rules! from_bytevec {
     };
 }
 
-#[derive(Clone, FromPyObject)]
+#[derive(Clone, Debug, PartialEq, FromPyObject)]
 pub struct InferRequest {
     pub model_name: String,
     pub model_version: String,
@@ -89,7 +89,7 @@ impl InferRequest {
     }
 }
 
-#[derive(Clone, FromPyObject)]
+#[derive(Clone, Debug, PartialEq, FromPyObject)]
 pub struct InferResponse {
     pub model_name: String,
     pub id: String,
@@ -140,7 +140,7 @@ impl InferResponse {
     }
 }
 
-#[derive(Clone, FromPyObject)]
+#[derive(Clone, Debug, PartialEq, FromPyObject)]
 pub struct Parameter {
     pub str_param: Option<String>,
     pub int_param: Option<i64>,
@@ -190,7 +190,7 @@ impl ToPyObject for Parameter {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct InputTensor {
     pub name: String,
     pub datatype: String,
@@ -232,7 +232,7 @@ impl FromPyObject<'_> for InputTensor {
         let name: String = ob.getattr("name")?.extract()?;
         let datatype: String = ob.getattr("datatype")?.extract()?;
         let shape: Vec<i64> = ob.getattr("shape")?.extract()?;
-        let parameters: HashMap<String, Parameter> = HashMap::new();
+        let parameters: HashMap<String, Parameter> = ob.getattr("parameters")?.extract()?;
         let _: Result<(), anyhow::Error> = match datatype.as_str() {
             "FP32" => {
                 tensor_data.fp32_contents = ob.getattr("data")?.extract()?;
@@ -270,7 +270,7 @@ impl ToPyObject for InputTensor {
     }
 }
 
-#[derive(Clone, FromPyObject)]
+#[derive(Clone, Debug, PartialEq, FromPyObject)]
 pub struct OutputTensor {
     pub name: String,
     pub datatype: String,
@@ -345,7 +345,7 @@ impl ToPyObject for OutputTensor {
     }
 }
 
-#[derive(Clone, FromPyObject)]
+#[derive(Clone, Debug, PartialEq, FromPyObject)]
 pub struct TensorData {
     pub bool_contents: Vec<bool>,
     pub int_contents: Vec<i32>,
@@ -432,11 +432,13 @@ fn data_to_py(datatype: String, contents: TensorData, py: pyo3::Python<'_>) -> P
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashMap;
+
     use pyo3::{prepare_freethreaded_python, Py, Python, ToPyObject};
 
-    use crate::python::PyParameter;
+    use crate::python::{PyInferInput, PyParameter};
 
-    use super::Parameter;
+    use super::{InputTensor, Parameter, TensorData};
 
     fn setup() {
         prepare_freethreaded_python();
@@ -476,6 +478,47 @@ mod tests {
 
             assert!(extracted.is_ok());
             assert!(extracted.unwrap().bool_param.unwrap());
+        });
+    }
+
+    #[test]
+    fn test_input_tensor_py_conversion() {
+        setup();
+
+        Python::with_gil(|py| {
+            let mut parameters = HashMap::new();
+            let mut data = TensorData::default();
+
+            parameters.insert(
+                "blah".to_string(),
+                Parameter {
+                    bool_param: None,
+                    str_param: None,
+                    int_param: Some(1234),
+                    float_param: None,
+                },
+            );
+            data.fp32_contents = vec![2.0_f32];
+
+            let input_tensor = InputTensor {
+                name: "blah".to_string(),
+                datatype: "FP32".to_string(),
+                parameters,
+                shape: vec![1],
+                data,
+            };
+
+            let raw_py = input_tensor.to_object(py);
+            let py_input: PyInferInput = raw_py.extract(py).unwrap();
+
+            assert_eq!(input_tensor.name, py_input.name);
+            assert_eq!(input_tensor.datatype, py_input.datatype);
+            assert_eq!(input_tensor.shape, py_input.shape);
+
+            let extracted = raw_py.extract::<InputTensor>(py);
+
+            assert!(extracted.is_ok());
+            assert_eq!(input_tensor, extracted.unwrap());
         });
     }
 }
