@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "pytorch-resnet"
+version = "0.1.0"
+description = ""
+authors = ["rfast <rfast@expediagroup.com>"]
+readme = "README.md"
+
+
+[tool.poetry.dependencies]
+python = "^3.9"
+torch = "^2.1.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -12,6 +12,7 @@ serde = { version = "1.0.164", features = ["derive"] }
 ferrix-model-api = { path = "../ferrix-model-api" }
 ferrix-protos = { path = "../ferrix-protos" }
 ferrix-python-hooks = { path = "../ferrix-python-hooks" }
+async-trait = "0.1.73"
 
 [build-dependencies]
 prost-build = "0.11.9"

@@ -87,7 +87,7 @@ impl GrpcInferenceService for GrpcInferenceServiceImpl {
         request: tonic::Request<ModelInferRequest>,
     ) -> std::result::Result<tonic::Response<ModelInferResponse>, tonic::Status> {
         let infer_request = InferRequest::from_proto(request.into_inner());
-        let infer_result = self.model.predict(infer_request);
+        let infer_result = self.model.predict(infer_request).await;
 
         match infer_result {
             Ok(infer_response) => Ok(Response::new(infer_response.to_proto())),
