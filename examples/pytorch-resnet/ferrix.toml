@@ -1,1 +1,4 @@
 model_name = "resnet18"
+base_path = "./model.pt"
+
+[extended_config]
