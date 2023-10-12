@@ -414,16 +414,11 @@ impl TensorData {
 // Utils
 fn data_to_py(datatype: String, contents: TensorData, py: pyo3::Python<'_>) -> Py<PyList> {
     match datatype.as_str() {
-        "INT8" => todo!(),
-        "INT16" => todo!(),
-        "INT32" => contents.int_contents.into_py(py).extract(py).unwrap(),
+        "INT8" | "INT16" | "INT32" => contents.int_contents.into_py(py).extract(py).unwrap(),
         "INT64" => contents.int64_contents.into_py(py).extract(py).unwrap(),
-        "UINT8" => todo!(),
-        "UINT16" => todo!(),
-        "UINT32" => contents.uint_contents.into_py(py).extract(py).unwrap(),
+        "UINT8" | "UINT16" | "UINT32" => contents.uint_contents.into_py(py).extract(py).unwrap(),
         "UINT64" => contents.uint64_contents.into_py(py).extract(py).unwrap(),
-        "FP16" => todo!(),
-        "FP32" => contents.fp32_contents.into_py(py).extract(py).unwrap(),
+        "FP16" | "FP32" => contents.fp32_contents.into_py(py).extract(py).unwrap(),
         "FP64" => contents.fp64_contents.into_py(py).extract(py).unwrap(),
         "BYTES" => todo!(),
         _ => todo!(),

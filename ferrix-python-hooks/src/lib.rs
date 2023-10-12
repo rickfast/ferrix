@@ -44,43 +44,37 @@ fn ferrix(_py: Python, module: &PyModule) -> PyResult<()> {
     Ok(())
 }
 
-pub fn eval() {
+pub fn eval(code: String) {
     pyo3::append_to_inittab!(ferrix);
     pyo3::prepare_freethreaded_python();
 
-    Python::with_gil(|py| {
-        py.run(CODE, None, None).unwrap();
-    });
+    Python::with_gil(|py| py.run(&code, None, None).unwrap())
 }
 
-pub fn preprocess(input: InferRequest) -> InferRequest {
+pub fn preprocess(input: InferRequest) -> PyResult<InferRequest> {
     Python::with_gil(|py| {
         let input = input.to_object(py);
         let args = PyTuple::new(py, &[input]);
         let response = PREPROCESSOR
             .get()
             .unwrap()
-            .call(py, args, Some(PyDict::new(py)))
-            .unwrap();
+            .call(py, args, Some(PyDict::new(py)))?;
 
         response.extract::<InferRequest>(py)
     })
-    .unwrap()
 }
 
-pub fn postprocess(input: InferResponse) -> InferResponse {
+pub fn postprocess(input: InferResponse) -> PyResult<InferResponse> {
     Python::with_gil(|py| {
         let input = input.to_object(py);
         let args = PyTuple::new(py, &[input]);
         let response = PREPROCESSOR
             .get()
             .unwrap()
-            .call(py, args, Some(PyDict::new(py)))
-            .unwrap();
+            .call(py, args, Some(PyDict::new(py)))?;
 
         response.extract::<InferResponse>(py)
     })
-    .unwrap()
 }
 
 #[cfg(test)]
@@ -91,7 +85,7 @@ mod tests {
 
     #[test]
     fn test() {
-        eval();
+        eval(CODE.to_string());
 
         PREPROCESSOR.get().unwrap();
 
@@ -123,6 +117,6 @@ mod tests {
 
         let response = preprocess(infer_request);
 
-        assert_eq!("1".to_string(), response.id)
+        assert_eq!("1".to_string(), response.unwrap().id)
     }
 }

@@ -7,4 +7,6 @@ edition = "2021"
 anyhow = "1.0.75"
 ferrix-protos = { path = "../ferrix-protos" }
 pyo3 = "0.19.1"
+serde = "1.0.188"
 thiserror = "1.0.43"
+toml = "0.8.2"

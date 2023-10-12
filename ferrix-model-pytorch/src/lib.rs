@@ -6,37 +6,33 @@ use anyhow::bail;
 use atomic_option::AtomicOption;
 use ferrix_model_api::internal::*;
 use ferrix_model_api::Model;
+use ferrix_model_api::ModelConfig;
 use ferrix_model_api::ModelError;
 use ferrix_model_api::ModelResult;
 use tch::CModule;
 use tch::Kind;
 use tch::Tensor as PyTorchTensor;
 
-struct PyTorchModel {
+pub struct PyTorchModel {
     module: AtomicOption<CModule>,
-    model_config: PyTorchModelConfig,
+    model_config: ModelConfig,
 }
 
 impl PyTorchModel {
-    fn new(model_config: PyTorchModelConfig) -> Self {
+    pub fn new(config: ferrix_model_api::ModelConfig) -> Self {
         PyTorchModel {
             module: AtomicOption::empty(),
-            model_config,
+            model_config: config,
         }
     }
 }
 
-#[derive(Clone)]
-struct PyTorchModelConfig {
-    model: String,
-}
-
 impl Model for PyTorchModel {
     fn load(&mut self) -> ModelResult<()> {
-        let file_name = self.model_config.model.to_string();
+        let file_name = self.model_config.base_path.to_string();
 
         println!("Loading file {}", file_name);
-        let result = tch::CModule::load(self.model_config.model.to_string());
+        let result = tch::CModule::load(self.model_config.base_path.to_string());
         let model = match result {
             Ok(module) => module,
             Err(error) => bail!(ModelError::Load(error.to_string())),
@@ -141,8 +137,10 @@ mod tests {
     fn test_basic_pytorch_inference() {
         let resource_dir = format!("{}/resource", env!("CARGO_MANIFEST_DIR"));
         let saved_model_filename = format!("{}/model.pt", resource_dir);
-        let mut model = PyTorchModel::new(PyTorchModelConfig {
-            model: saved_model_filename,
+        let mut model = PyTorchModel::new(ModelConfig {
+            model_name: String::from(""),
+            base_path: saved_model_filename,
+            extended_config: None,
         });
         let load_result = model.load();
 

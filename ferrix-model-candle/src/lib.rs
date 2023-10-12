@@ -10,6 +10,12 @@ struct CandleModel {
     module: Arc<dyn Module + Send + Sync>,
 }
 
+impl CandleModel {
+    fn new(config: ferrix_model_api::ModelConfig) -> Self {
+        todo!()
+    }
+}
+
 impl Model for CandleModel {
     fn load(&mut self) -> ferrix_model_api::ModelResult<()> {
         todo!()

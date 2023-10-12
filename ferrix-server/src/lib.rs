@@ -1,22 +1,32 @@
-use std::sync::Arc;
-
 use ferrix_model_api::internal::InferRequest;
+use inference::Inference;
 use tonic::Response;
 
 use ferrix_model_api::Model;
-use ferrix_protos::grpc_inference_service_server::GrpcInferenceService;
+use ferrix_protos::grpc_inference_service_server::{
+    GrpcInferenceService, GrpcInferenceServiceServer,
+};
 use ferrix_protos::*;
+use tonic::transport::Server;
+
+pub mod inference;
 
 // #[derive(Default)]
 pub struct GrpcInferenceServiceImpl {
-    model: Arc<dyn Model + Send + Sync>,
+    model: Inference,
+}
+
+impl GrpcInferenceServiceImpl {
+    pub fn with_model(model: Inference) -> Self {
+        GrpcInferenceServiceImpl { model }
+    }
 }
 
 #[tonic::async_trait]
 impl GrpcInferenceService for GrpcInferenceServiceImpl {
     async fn server_live(
         &self,
-        request: tonic::Request<ServerLiveRequest>,
+        _: tonic::Request<ServerLiveRequest>,
     ) -> std::result::Result<tonic::Response<ServerLiveResponse>, tonic::Status> {
         return Ok(Response::new(ServerLiveResponse { live: true }));
     }
@@ -24,7 +34,7 @@ impl GrpcInferenceService for GrpcInferenceServiceImpl {
     /// The ServerReady API indicates if the server is ready for inferencing.
     async fn server_ready(
         &self,
-        request: tonic::Request<ServerReadyRequest>,
+        _: tonic::Request<ServerReadyRequest>,
     ) -> std::result::Result<tonic::Response<ServerReadyResponse>, tonic::Status> {
         return Ok(Response::new(ServerReadyResponse { ready: true }));
     }
@@ -32,7 +42,7 @@ impl GrpcInferenceService for GrpcInferenceServiceImpl {
     /// The ModelReady API indicates if a specific model is ready for inferencing.
     async fn model_ready(
         &self,
-        request: tonic::Request<ModelReadyRequest>,
+        _: tonic::Request<ModelReadyRequest>,
     ) -> std::result::Result<tonic::Response<ModelReadyResponse>, tonic::Status> {
         return Ok(Response::new(ModelReadyResponse {
             ready: self.model.loaded(),
@@ -77,8 +87,27 @@ impl GrpcInferenceService for GrpcInferenceServiceImpl {
         request: tonic::Request<ModelInferRequest>,
     ) -> std::result::Result<tonic::Response<ModelInferResponse>, tonic::Status> {
         let infer_request = InferRequest::from_proto(request.into_inner());
-        return Ok(Response::new(
-            self.model.predict(infer_request).unwrap().to_proto(),
-        ));
+        let infer_result = self.model.predict(infer_request);
+
+        match infer_result {
+            Ok(infer_response) => Ok(Response::new(infer_response.to_proto())),
+            Err(error) => Err(tonic::Status::internal(error.to_string())),
+        }
     }
+}
+
+pub async fn serve(
+    port: i16,
+    service: GrpcInferenceServiceImpl,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let addr = format!("[::1]:{}", port).parse().unwrap();
+
+    println!("GreeterServer listening on {}", addr);
+
+    Server::builder()
+        .add_service(GrpcInferenceServiceServer::new(service))
+        .serve(addr)
+        .await?;
+
+    Ok(())
 }

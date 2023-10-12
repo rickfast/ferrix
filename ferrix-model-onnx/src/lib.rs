@@ -3,6 +3,12 @@ use ort::*;
 
 struct OnnxModel;
 
+impl OnnxModel {
+    fn new(config: ferrix_model_api::ModelConfig) -> Self {
+        todo!()
+    }
+}
+
 impl Model for OnnxModel {
     fn load(&mut self) -> ferrix_model_api::ModelResult<()> {
         todo!()
