@@ -140,15 +140,15 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'ferrix'",
+            "name": "Debug executable 'ferrix-cli'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=ferrix",
-                    "--package=ferrix"
+                    "--bin=ferrix-cli",
+                    "--package=ferrix-cli"
                 ],
                 "filter": {
-                    "name": "ferrix",
+                    "name": "ferrix-cli",
                     "kind": "bin"
                 }
             },

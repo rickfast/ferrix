@@ -20,7 +20,7 @@ impl Model for OnnxModel {
 
     fn predict(
         &self,
-        request: ferrix_model_api::internal::InferRequest,
+        request: &ferrix_model_api::internal::InferRequest,
     ) -> ferrix_model_api::ModelResult<ferrix_model_api::internal::InferResponse> {
         let environment = Environment::builder()
             .with_name("GPT-2")

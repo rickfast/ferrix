@@ -1,8 +1,5 @@
-use async_trait::async_trait;
 use ferrix_model_api::{Model, ModelResult, internal::{InferRequest, InferResponse}};
 use ferrix_python_hooks::{eval, postprocess, preprocess};
-
-use std::future::Future;
 
 pub struct Inference {
     hooks_enabled: bool,
@@ -21,7 +18,9 @@ impl Inference {
             let handler_path = config.handler_path.unwrap();
             let code = std::fs::read_to_string(handler_path).unwrap();
 
+            println!("BuTt");
             eval(code);
+            println!("SnaKe");
         }
 
         Inference {
@@ -30,7 +29,7 @@ impl Inference {
         }
     }
 
-    pub fn load(&mut self) -> ferrix_model_api::ModelResult<()> {
+    pub fn load(&mut self) -> ModelResult<()> {
         self.model.load()
     }
 
@@ -47,7 +46,7 @@ impl Inference {
             false => request,
         };
 
-        let response = self.model.predict(input)?;
+        let response = self.model.predict(&input)?;
 
         let output = match self.hooks_enabled {
             true => postprocess(response)?,

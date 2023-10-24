@@ -96,13 +96,13 @@ impl GrpcInferenceService for GrpcInferenceServiceImpl {
     }
 }
 
-pub async fn serve(
+pub async fn  serve(
     port: i16,
     service: GrpcInferenceServiceImpl,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let addr = format!("[::1]:{}", port).parse().unwrap();
 
-    println!("GreeterServer listening on {}", addr);
+    println!("Ferrix listening on {}", addr);
 
     Server::builder()
         .add_service(GrpcInferenceServiceServer::new(service))

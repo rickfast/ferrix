@@ -27,7 +27,7 @@ impl Model for CandleModel {
 
     fn predict(
         &self,
-        request: InferRequest,
+        request: &InferRequest,
     ) -> ferrix_model_api::ModelResult<ferrix_model_api::internal::InferResponse> {
         let tensor: CandleTensor = request
             .inputs

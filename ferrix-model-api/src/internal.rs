@@ -219,8 +219,7 @@ impl InputTensor {
                 .map(|(key, value)| (key.to_string(), Parameter::from_proto(value)))
                 .collect::<HashMap<String, Parameter>>(),
             data: TensorData::from_proto(
-                request.datatype.clone(),
-                request.contents.as_ref().unwrap(),
+                request.contents.as_ref().unwrap()
             ),
         }
     }
@@ -291,7 +290,6 @@ impl OutputTensor {
                 .map(|(key, value)| (key.to_string(), Parameter::from_proto(value)))
                 .collect::<HashMap<String, Parameter>>(),
             data: TensorData::from_proto(
-                response.datatype.clone(),
                 response.contents.as_ref().unwrap(),
             ),
         }
@@ -371,7 +369,7 @@ impl TensorData {
         }
     }
 
-    fn from_proto(datatype: String, contents: &InferTensorContents) -> Self {
+    fn from_proto(contents: &InferTensorContents) -> Self {
         let data = contents.clone();
         TensorData {
             bool_contents: data.bool_contents.clone(),
@@ -383,19 +381,6 @@ impl TensorData {
             fp64_contents: data.fp64_contents.clone(),
             bytes_contents: data.bytes_contents.clone(),
         }
-    }
-
-    fn to_proto(self) -> InferTensorContents {
-        let mut contents = InferTensorContents::default();
-
-        contents.bool_contents = self.bool_contents.clone();
-        contents.bytes_contents = self.bytes_contents.clone();
-        contents.fp32_contents = self.fp32_contents.clone();
-        contents.fp64_contents = self.fp64_contents.clone();
-        contents.int_contents = self.int_contents.clone();
-        contents.int64_contents = self.int64_contents.clone();
-
-        contents
     }
 
     pub fn from_bytes(datatype: String, bytes: &[u8]) -> Self {

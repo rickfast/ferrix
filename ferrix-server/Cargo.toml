@@ -4,8 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-prost = "0.11.9"
-tonic = "0.9.2"
+prost = "0.12.1"
+tonic = "0.10.2"
 tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }
 axum = "0.6.18"
 serde = { version = "1.0.164", features = ["derive"] }
@@ -15,6 +15,6 @@ ferrix-python-hooks = { path = "../ferrix-python-hooks" }
 async-trait = "0.1.73"
 
 [build-dependencies]
-prost-build = "0.11.9"
+prost-build = "0.12.1"
 protoc-bin-vendored = "3.0.0"
 tonic-build = "0.9.2"

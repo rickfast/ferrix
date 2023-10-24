@@ -47,7 +47,7 @@ impl Model for PyTorchModel {
         return self.module.take(SeqCst).is_some();
     }
 
-    fn predict(&self, request: InferRequest) -> ModelResult<InferResponse> {
+    fn predict(&self, request: &InferRequest) -> ModelResult<InferResponse> {
         let pt_tensors: Vec<PyTorchTensor> = request
             .inputs
             .iter()
@@ -175,7 +175,7 @@ mod tests {
                 data: tensor_data,
             }],
         };
-        let result = model.predict(request);
+        let result = model.predict(&request);
 
         match result {
             Ok(response) => assert!(response.outputs.first().is_some()),

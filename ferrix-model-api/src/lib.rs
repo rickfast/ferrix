@@ -9,7 +9,7 @@ pub mod python;
 pub trait Model: Send + Sync {
     fn load(&mut self) -> ModelResult<()>;
     fn loaded(&self) -> bool;
-    fn predict(&self, request: InferRequest) -> ModelResult<InferResponse>;
+    fn predict(&self, request: &InferRequest) -> ModelResult<InferResponse>;
 }
 
 #[derive(Deserialize)]

@@ -48,7 +48,11 @@ pub fn eval(code: String) {
     pyo3::append_to_inittab!(ferrix);
     pyo3::prepare_freethreaded_python();
 
-    Python::with_gil(|py| py.run(&code, None, None).unwrap())
+    Python::with_gil(|py| {
+        println!("Python version: {}", py.version());
+
+        py.run(&code, None, None).unwrap()
+    })
 }
 
 pub fn preprocess(input: InferRequest) -> PyResult<InferRequest> {
